@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SCD Roots Portal</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css" />
+  <style>
+    body { margin: 0; font-family: sans-serif; }
+    header { background: #111; color: #fff; text-align: center; padding: 1rem; }
+    #map { height: 100vh; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SCD Roots Portal</h1>
+  </header>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/esri-leaflet"></script>
+  <script src="https://unpkg.com/esri-leaflet-geocoder"></script>
+
+  <script>
+    const map = L.map('map').setView([39.8412, -74.2007], 14); // Forked River, NJ
+
+    // USGS Topo Basemap
+    L.tileLayer('https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 16,
+      attribution: 'Map courtesy USGS National Map'
+    }).addTo(map);
+
+    // Add Esri geosearch control
+    L.esri.Geocoding.geosearch().addTo(map);
+
+    // Single location marker
+    const locations = [
+      {
+        name: "Ocean County Soil Conservation District",
+        coords: [39.8412, -74.2007],
+        pdf: "https://soildistrict.org/"
+      }
+    ];
+
+    locations.forEach(site => {
+      L.marker(site.coords).addTo(map)
+        .bindPopup(`<b>${site.name}</b><br><a href="${site.pdf}" target="_blank">Open Website</a>`);
+    });
+  </script>
+</body>
+</html>
