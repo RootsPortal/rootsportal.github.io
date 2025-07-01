@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SCD Roots Portal</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body { margin: 0; font-family: sans-serif; }
+    header { background: #111; color: #fff; text-align: center; padding: 1rem; }
+    #map { height: 100vh; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SCD Roots Portal</h1>
+  </header>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([40.0583, -74.4057], 8); // New Jersey center
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const locations = [
+      {
+        name: "New Jersey State Museum",
+        coords: [40.2215, -74.7691],
+        pdf: "https://www.nj.gov/state/museum/"
+      },
+      {
+        name: "Ocean County Soil Conservation District",
+        coords: [39.9536, -74.2019],
+        pdf: "https://soildistrict.org/"
+      },
+      {
+        name: "Ohberg Mastodon Site, Vernon NJ",
+        coords: [41.1985, -74.5054],
+        pdf: "https://nj.gov/dep/njgs/enviroed/newsletter/vn0701.pdf"
+      }
+    ];
+
+    locations.forEach(site => {
+      L.marker(site.coords).addTo(map)
+        .bindPopup(`<b>${site.name}</b><br><a href="${site.pdf}" target="_blank">Open Article</a>`);
+    });
+  </script>
+</body>
+</html>
