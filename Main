@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>SCD Roots Portal</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css" />
   <style>
     body { margin: 0; font-family: sans-serif; }
     header { background: #111; color: #fff; text-align: center; padding: 1rem; }
@@ -17,12 +18,18 @@
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/esri-leaflet"></script>
+  <script src="https://unpkg.com/esri-leaflet-geocoder"></script>
+
   <script>
     const map = L.map('map').setView([40.0583, -74.4057], 8); // New Jersey center
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
+
+    // ✅ Esri Geosearch bar for real locations
+    L.esri.Geocoding.geosearch().addTo(map);
 
     const locations = [
       {
