@@ -1,16 +1,15 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SCD Roots Portal</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css" />
   <style>
     body { margin: 0; font-family: sans-serif; }
     header { background: #111; color: #fff; text-align: center; padding: 1rem; }
     #map { height: 100vh; }
 
-    /* Enlarged popup styling for mobile friendliness */
     .leaflet-popup-content {
       font-size: 1.1rem;
       max-width: 260px;
@@ -28,32 +27,18 @@
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/esri-leaflet"></script>
-  <script src="https://unpkg.com/esri-leaflet-geocoder"></script>
 
   <script>
-    const map = L.map('map').setView([40.1, -74.7], 7); // Full NJ view
+    const map = L.map('map').setView([40.1, -74.7], 7);
 
     L.tileLayer('https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 16,
       attribution: 'Map courtesy USGS National Map'
     }).addTo(map);
 
-    // ✅ FIXED SEARCH
-    const searchControl = L.esri.Geocoding.geosearch().addTo(map);
-    const resultsLayer = L.layerGroup().addTo(map);
-
-    searchControl.on('results', function(data) {
-      resultsLayer.clearLayers();
-      for (let i = 0; i < data.results.length; i++) {
-        resultsLayer.addLayer(L.marker(data.results[i].latlng));
-      }
-    });
-
-    // Custom larger marker icon
     const icon = L.icon({
       iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-      iconSize: [35, 56], // larger than default
+      iconSize: [35, 56],
       iconAnchor: [17, 56],
       popupAnchor: [0, -40]
     });
