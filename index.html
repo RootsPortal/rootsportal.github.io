@@ -39,14 +39,21 @@
       attribution: 'Map courtesy USGS National Map'
     }).addTo(map);
 
-    // ✅ FIXED SEARCH
-    const searchControl = L.esri.Geocoding.geosearch().addTo(map);
+    // ✅ FIXED SEARCH (Zooms and Pins)
+    const searchControl = L.esri.Geocoding.geosearch({
+      position: 'topright',
+      placeholder: 'Search New Jersey...',
+      useMapBounds: false
+    }).addTo(map);
+
     const resultsLayer = L.layerGroup().addTo(map);
 
     searchControl.on('results', function(data) {
       resultsLayer.clearLayers();
-      for (let i = 0; i < data.results.length; i++) {
-        resultsLayer.addLayer(L.marker(data.results[i].latlng));
+      if (data.results.length > 0) {
+        const result = data.results[0];
+        resultsLayer.addLayer(L.marker(result.latlng));
+        map.setView(result.latlng, 13);
       }
     });
 
