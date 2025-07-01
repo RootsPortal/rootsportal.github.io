@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>SCD Roots Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css" />
+  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@3.0.3/dist/esri-leaflet-geocoder.css" />
   <style>
     body { margin: 0; font-family: sans-serif; }
     header { background: #111; color: #fff; text-align: center; padding: 1rem; }
     #map { height: 100vh; }
 
-    /* Enlarged popup styling for mobile friendliness */
     .leaflet-popup-content {
       font-size: 1.1rem;
       max-width: 260px;
@@ -27,20 +27,18 @@
   </header>
   <div id="map"></div>
 
-  <!-- JS libraries -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/esri-leaflet@3.0.7/dist/esri-leaflet.js"></script>
   <script src="https://unpkg.com/esri-leaflet-geocoder@3.0.3/dist/esri-leaflet-geocoder.js"></script>
 
   <script>
-    const map = L.map('map').setView([40.1, -74.7], 7); // Full NJ view
+    const map = L.map('map').setView([40.1, -74.7], 7);
 
     L.tileLayer('https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 16,
       attribution: 'Map courtesy USGS National Map'
     }).addTo(map);
 
-    // ✅ Fully working search (zoom + marker)
     const searchControl = L.esri.Geocoding.geosearch({
       position: 'topright',
       placeholder: 'Search New Jersey...',
@@ -58,7 +56,6 @@
       }
     });
 
-    // Larger marker for better touch visibility
     const icon = L.icon({
       iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
       iconSize: [35, 56],
