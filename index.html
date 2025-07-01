@@ -34,23 +34,25 @@
     L.esri.Geocoding.geosearch().addTo(map);
 
     // Single location marker
-    const locations = [
+const locations = [
   {
     name: "2025.001 — Ocean County Soil Conservation District",
     coords: [39.85742263039092, -74.20314358171568],
     pdf: "pdfs/ocsd-brochure.pdf"
   },
   {
-  name: "2025.003 — Ohberg Mastodon Discovery (Vernon, NJ)",
-  coords: [41.1923, -74.4715],
-  pdf: "2025_003.pdf"
-}
+    name: "2025.003 — Ohberg Mastodon Discovery (Vernon, NJ)",
+    coords: [41.1923, -74.4715],
+    pdf: "2025_003.pdf"
+  }
 ];
 
 locations.forEach(site => {
   L.marker(site.coords).addTo(map)
     .bindPopup(`<b>${site.name}</b><br>
-      <a href="${site.pdf}" target="_blank">Read all about it!</a>`);
+      <a href="#" onclick="window.open('${site.pdf}', '_blank', 'width=800,height=600'); return false;">
+        Read all about it!
+      </a>`);
 });
   </script>
 </body>
