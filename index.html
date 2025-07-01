@@ -39,7 +39,16 @@
       attribution: 'Map courtesy USGS National Map'
     }).addTo(map);
 
-    L.esri.Geocoding.geosearch().addTo(map);
+    // ✅ FIXED SEARCH
+    const searchControl = L.esri.Geocoding.geosearch().addTo(map);
+    const resultsLayer = L.layerGroup().addTo(map);
+
+    searchControl.on('results', function(data) {
+      resultsLayer.clearLayers();
+      for (let i = 0; i < data.results.length; i++) {
+        resultsLayer.addLayer(L.marker(data.results[i].latlng));
+      }
+    });
 
     // Custom larger marker icon
     const icon = L.icon({
