@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Article Viewer</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; background: #111; color: #fff; }
+    header { padding: 1rem; background: #222; text-align: center; }
+    .content { padding: 1rem; text-align: center; }
+    img { width: 90%; max-width: 900px; margin: 1rem 0; box-shadow: 0 0 10px #000; }
+    .back { display: block; color: #0af; margin: 1rem auto; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="articleTitle">Article</h1>
+    <a href="index.html" class="back">← Back to Map</a>
+  </header>
+  <div class="content" id="imageContainer"></div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const doc = params.get("doc");
+    const title = params.get("title") || doc;
+
+    document.getElementById("articleTitle").textContent = title;
+
+    const container = document.getElementById("imageContainer");
+
+    let page = 1;
+    function loadNext() {
+      const img = new Image();
+      img.src = `articles/${doc}_pg${page}.jpg`;
+      img.onload = function () {
+        container.appendChild(img);
+        page++;
+        loadNext(); // recursively load next image
+      };
+      img.onerror = function () {
+        if (page === 1) {
+          container.innerHTML = "<p style='color: red;'>Article not found.</p>";
+        }
+      };
+    }
+
+    if (doc) {
+      loadNext();
+    } else {
+      container.innerHTML = "<p style='color: red;'>No document specified.</p>";
+    }
+  </script>
+</body>
+</html>
