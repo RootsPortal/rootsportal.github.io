@@ -9,6 +9,16 @@
     body { margin: 0; font-family: sans-serif; }
     header { background: #111; color: #fff; text-align: center; padding: 1rem; }
     #map { height: 100vh; }
+
+    /* Enlarged popup styling for mobile friendliness */
+    .leaflet-popup-content {
+      font-size: 1.1rem;
+      max-width: 260px;
+      line-height: 1.5;
+    }
+    .leaflet-popup-content-wrapper {
+      padding: 14px;
+    }
   </style>
 </head>
 <body>
@@ -31,6 +41,14 @@
 
     L.esri.Geocoding.geosearch().addTo(map);
 
+    // Custom larger marker icon
+    const icon = L.icon({
+      iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+      iconSize: [35, 56], // larger than default
+      iconAnchor: [17, 56],
+      popupAnchor: [0, -40]
+    });
+
     const locations = [
       {
         name: "2025.003 — Ohberg Mastodon Discovery (Vernon, NJ)",
@@ -41,7 +59,7 @@
     ];
 
     locations.forEach(site => {
-      L.marker(site.coords).addTo(map)
+      L.marker(site.coords, { icon }).addTo(map)
         .bindPopup(`<b>${site.name}</b><br>
           <a href="article.html?doc=${site.doc}&title=${encodeURIComponent(site.title)}">
             Read all about it!
