@@ -1,69 +1,45 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SCD Roots Portal</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <title>SCD Roots Article</title>
   <style>
-    body { margin: 0; font-family: sans-serif; }
-    header { background: #111; color: #fff; text-align: center; padding: 1rem; }
-    #map { height: 100vh; }
-
-    .leaflet-popup-content {
-      font-size: 1.1rem;
-      max-width: 260px;
-      line-height: 1.5;
+    body {
+      margin: 0;
+      padding: 1rem;
+      font-family: sans-serif;
+      background: #f8f8f8;
+      text-align: center;
     }
-    .leaflet-popup-content-wrapper {
-      padding: 14px;
+    h1 {
+      margin-bottom: 2rem;
+    }
+    .article-img {
+      max-width: 90%;
+      height: auto;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>SCD Roots Portal</h1>
-  </header>
-  <div id="map"></div>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <h1 id="article-title">Loading...</h1>
+  <img id="page1" class="article-img" />
+  <img id="page2" class="article-img" />
 
   <script>
-    const map = L.map('map').setView([40.1, -74.7], 7);
+    const params = new URLSearchParams(window.location.search);
+    const doc = params.get("doc");
+    const title = params.get("title") || "SCD Roots Article";
 
-    L.tileLayer('https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 16,
-      attribution: 'Map courtesy USGS National Map'
-    }).addTo(map);
+    document.title = title;
+    document.getElementById("article-title").textContent = title;
 
-    const icon = L.icon({
-      iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-      iconSize: [35, 56],
-      iconAnchor: [17, 56],
-      popupAnchor: [0, -40]
-    });
-
-    const locations = [
-      {
-        name: "2025.001 — Hadrosaurus foulkii Discovery (Haddonfield, NJ)",
-        coords: [39.910196, -75.02857],
-        doc: "2025_001",
-        title: "Hadrosaurus foulkii Discovery"
-      },
-      {
-        name: "2025.003 — Ohberg Mastodon Discovery (Vernon, NJ)",
-        coords: [41.1923, -74.4715],
-        doc: "2025_003",
-        title: "Ohberg Mastodon Discovery"
-      }
-    ];
-
-    locations.forEach(site => {
-      L.marker(site.coords, { icon }).addTo(map)
-        .bindPopup(`<b>${site.name}</b><br>
-          <a href="article.html?doc=${site.doc}&title=${encodeURIComponent(site.title)}">
-            Read all about it!
-          </a>`);
-    });
+    if (doc) {
+      document.getElementById("page1").src = `${doc}_pg1.jpg`;
+      document.getElementById("page2").src = `${doc}_pg2.jpg`;
+    }
   </script>
 </body>
 </html>
