@@ -21,12 +21,21 @@
       margin-bottom: 1.5rem;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
+    .fallback {
+      color: red;
+      margin-top: 2rem;
+    }
   </style>
 </head>
 <body>
   <h1 id="article-title">Loading...</h1>
-  <img id="page1" class="article-img" />
-  <img id="page2" class="article-img" />
+  <div id="image-container">
+    <img id="page1" class="article-img" alt="Page 1" />
+    <img id="page2" class="article-img" alt="Page 2" />
+  </div>
+  <p class="fallback" id="fallback-message" style="display: none;">
+    Article pages could not be loaded. Please check the link or file names.
+  </p>
 
   <script>
     const params = new URLSearchParams(window.location.search);
@@ -36,9 +45,21 @@
     document.title = title;
     document.getElementById("article-title").textContent = title;
 
+    function checkImage(imgId, path) {
+      const img = document.getElementById(imgId);
+      img.src = path;
+      img.onerror = () => {
+        img.style.display = 'none';
+        document.getElementById('fallback-message').style.display = 'block';
+      };
+    }
+
     if (doc) {
-      document.getElementById("page1").src = `${doc}_pg1.jpg`;
-      document.getElementById("page2").src = `${doc}_pg2.jpg`;
+      checkImage("page1", `${doc}_pg1.jpg`);
+      checkImage("page2", `${doc}_pg2.jpg`);
+    } else {
+      document.getElementById("fallback-message").textContent = "No article specified.";
+      document.getElementById("fallback-message").style.display = "block";
     }
   </script>
 </body>
