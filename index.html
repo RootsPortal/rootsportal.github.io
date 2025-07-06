@@ -1,66 +1,69 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SCD Roots Article</title>
+  <title>SCD Roots Portal</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    body {
-      margin: 0;
-      padding: 1rem;
-      font-family: sans-serif;
-      background: #f8f8f8;
-      text-align: center;
+    body { margin: 0; font-family: sans-serif; }
+    header { background: #111; color: #fff; text-align: center; padding: 1rem; }
+    #map { height: 100vh; }
+
+    .leaflet-popup-content {
+      font-size: 1.1rem;
+      max-width: 260px;
+      line-height: 1.5;
     }
-    h1 {
-      margin-bottom: 2rem;
-    }
-    .article-img {
-      max-width: 90%;
-      height: auto;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    .fallback {
-      color: red;
-      margin-top: 2rem;
+    .leaflet-popup-content-wrapper {
+      padding: 14px;
     }
   </style>
 </head>
 <body>
-  <h1 id="article-title">Loading...</h1>
-  <div id="image-container">
-    <img id="page1" class="article-img" alt="Page 1" />
-    <img id="page2" class="article-img" alt="Page 2" />
-  </div>
-  <p class="fallback" id="fallback-message" style="display: none;">
-    Article pages could not be loaded. Please check the link or file names.
-  </p>
+  <header>
+    <h1>SCD Roots Portal</h1>
+  </header>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const doc = params.get("doc");
-    const title = params.get("title") || "SCD Roots Article";
+    const map = L.map('map').setView([40.1, -74.7], 7);
 
-    document.title = title;
-    document.getElementById("article-title").textContent = title;
+    L.tileLayer('https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 16,
+      attribution: 'Map courtesy USGS National Map'
+    }).addTo(map);
 
-    function checkImage(imgId, path) {
-      const img = document.getElementById(imgId);
-      img.src = path;
-      img.onerror = () => {
-        img.style.display = 'none';
-        document.getElementById('fallback-message').style.display = 'block';
-      };
-    }
+    const icon = L.icon({
+      iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+      iconSize: [35, 56],
+      iconAnchor: [17, 56],
+      popupAnchor: [0, -40]
+    });
 
-    if (doc) {
-      checkImage("page1", `${doc}_pg1.jpg`);
-      checkImage("page2", `${doc}_pg2.jpg`);
-    } else {
-      document.getElementById("fallback-message").textContent = "No article specified.";
-      document.getElementById("fallback-message").style.display = "block";
-    }
+    const locations = [
+      {
+        name: "2025.001 — Hadrosaurus foulkii Discovery (Haddonfield, NJ)",
+        coords: [39.910196, -75.02857],
+        doc: "2025_001",
+        title: "Hadrosaurus foulkii Discovery"
+      },
+      {
+        name: "2025.003 — Ohberg Mastodon Discovery (Vernon, NJ)",
+        coords: [41.1923, -74.4715],
+        doc: "2025_003",
+        title: "Ohberg Mastodon Discovery"
+      }
+    ];
+
+    locations.forEach(site => {
+      L.marker(site.coords, { icon }).addTo(map)
+        .bindPopup(<b>${site.name}</b><br>
+          <a href="article.html?doc=${site.doc}&title=${encodeURIComponent(site.title)}">
+            Read all about it!
+          </a>);
+    });
   </script>
 </body>
 </html>
