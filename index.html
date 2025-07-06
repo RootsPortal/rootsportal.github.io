@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -59,10 +60,10 @@
 
     locations.forEach(site => {
       L.marker(site.coords, { icon }).addTo(map)
-        .bindPopup(<b>${site.name}</b><br>
+        .bindPopup(`<b>${site.name}</b><br>
           <a href="article.html?doc=${site.doc}&title=${encodeURIComponent(site.title)}">
             Read all about it!
-          </a>);
+          </a>`);
     });
   </script>
 </body>
