@@ -55,9 +55,14 @@
         coords: [41.1923, -74.4715],
         doc: "2025_003",
         title: "Ohberg Mastodon Discovery"
-      }
-    ];
-
+      },
+  {
+    name: "2025.003 — Ohberg Mastodon Discovery (Vernon, NJ)",
+    coords: [41.1923, -74.4715],
+    doc: "2025_003",
+    title: "Ohberg Mastodon Discovery"
+  }
+];
     locations.forEach(site => {
       L.marker(site.coords, { icon }).addTo(map)
         .bindPopup(`<b>${site.name}</b><br>
