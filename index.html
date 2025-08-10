@@ -9,157 +9,93 @@
   body {
     margin: 0;
     font-family: Arial, sans-serif;
-    overflow: hidden;
+    background: #c9c3b5; /* outer background */
   }
+  /* Frame colors */
+  .frame {
+    position: fixed;
+    z-index: 2;
+    background: #8b6b4a; /* earthy brown frame color */
+  }
+  .frame.top { top: 0; left: 0; right: 0; height: 20px; }
+  .frame.bottom { bottom: 0; left: 0; right: 0; height: 20px; }
+  .frame.left { top: 0; bottom: 0; left: 0; width: 20px; }
+  .frame.right { top: 0; bottom: 0; right: 0; width: 20px; }
+
   #map {
     position: absolute;
-    top: 50px;
-    bottom: 50px;
-    left: 50px;
-    right: 50px;
+    top: 20px;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
     z-index: 1;
-    border-radius: 12px;
-    overflow: hidden;
   }
-  /* Portal borders */
-  .border {
-    position: absolute;
-    z-index: 2;
-    background-size: cover;
-    background-position: center;
-    animation: glow 3s infinite alternate;
-  }
-  @keyframes glow {
-    0% { box-shadow: 0 0 5px #ffd27f; }
-    100% { box-shadow: 0 0 20px #ffcc66; }
-  }
-  .border.top {
-    top: 0; left: 50px; right: 50px; height: 50px;
-    background-image: url('images/border_top.jpg');
-  }
-  .border.bottom {
-    bottom: 0; left: 50px; right: 50px; height: 50px;
-    background-image: url('images/border_bottom.jpg');
-  }
-  .border.left {
-    top: 0; bottom: 0; left: 0; width: 50px;
-    background-image: url('images/border_left.jpg');
-  }
-  .border.right {
-    top: 0; bottom: 0; right: 0; width: 50px;
-    background-image: url('images/border_right.jpg');
-  }
-  /* Category icons */
-  .category-icon {
-    position: absolute;
-    width: 40px; height: 40px;
-    cursor: pointer;
-    z-index: 3;
-    transition: transform 0.2s ease;
-  }
-  .category-icon:hover {
-    transform: scale(1.1);
-  }
-  .icon-soil { bottom: 5px; left: calc(50% - 20px); }
-  .icon-fossil { top: calc(50% - 20px); left: 5px; }
-  .icon-agriculture { top: 5px; left: calc(50% - 20px); }
-  .icon-geology { top: calc(50% - 20px); right: 5px; }
-  /* Popup styling */
-  .popup-img {
-    width: 100%;
-    height: auto;
-    margin-bottom: 0.5rem;
-    border-radius: 4px;
+  .leaflet-popup-content {
+    font-size: 1.1rem;
+    line-height: 1.5;
   }
 </style>
 </head>
 <body>
 
+<!-- Frame -->
+<div class="frame top"></div>
+<div class="frame bottom"></div>
+<div class="frame left"></div>
+<div class="frame right"></div>
+
+<!-- Map -->
 <div id="map"></div>
-
-<!-- Portal borders -->
-<div class="border top"></div>
-<div class="border bottom"></div>
-<div class="border left"></div>
-<div class="border right"></div>
-
-<!-- Category filter icons -->
-<img src="images/icon_soil.png" class="category-icon icon-soil" onclick="filterMarkers('Soil')" title="Soil Sites">
-<img src="images/icon_fossil.png" class="category-icon icon-fossil" onclick="filterMarkers('Fossil')" title="Fossil Sites">
-<img src="images/icon_agriculture.png" class="category-icon icon-agriculture" onclick="filterMarkers('Agriculture')" title="Agriculture Sites">
-<img src="images/icon_geology.png" class="category-icon icon-geology" onclick="filterMarkers('Geology')" title="Geology Sites">
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // Initialize map
 const map = L.map('map').setView([40.1, -74.7], 7);
 
-L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-  subdomains: 'abcd',
-  maxZoom: 19
+// USGS topo or switch to another base if desired
+L.tileLayer('https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
+  maxZoom: 16,
+  attribution: 'Map courtesy USGS National Map'
 }).addTo(map);
 
-// Custom marker icons
-const icons = {
-  Soil: L.icon({ iconUrl: 'images/icon_soil.png', iconSize: [35, 35] }),
-  Fossil: L.icon({ iconUrl: 'images/icon_fossil.png', iconSize: [35, 35] }),
-  Agriculture: L.icon({ iconUrl: 'images/icon_agriculture.png', iconSize: [35, 35] }),
-  Geology: L.icon({ iconUrl: 'images/icon_geology.png', iconSize: [35, 35] })
-};
+// Default blue Leaflet pin
+const blueIcon = L.icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [0, -30]
+});
 
-// Location data
+// Locations
 const locations = [
   {
-    name: "Hadrosaurus foulkii Discovery",
+    name: "2025.001 - Hadrosaurus foulkii Discovery",
     coords: [39.910196, -75.02857],
     doc: "2025_001",
-    title: "Hadrosaurus foulkii Discovery",
-    category: "Fossil",
-    image: "images/hadrosaurus.jpg"
+    title: "Hadrosaurus foulkii Discovery"
   },
   {
-    name: "Atlantochelys mortoni Discovery",
+    name: "2025.002 - Atlantochelys mortoni Discovery",
     coords: [40.3232, -74.2416],
     doc: "2025_002",
-    title: "Atlantochelys mortoni Discovery",
-    category: "Fossil",
-    image: "images/atlantochelys.jpg"
+    title: "Atlantochelys mortoni Discovery"
   },
   {
-    name: "Ohberg Mastodon Discovery",
+    name: "2025.003 - Ohberg Mastodon Discovery",
     coords: [41.1923, -74.4715],
     doc: "2025_003",
-    title: "Ohberg Mastodon Discovery",
-    category: "Fossil",
-    image: "images/mastodon.jpg"
+    title: "Ohberg Mastodon Discovery"
   }
 ];
 
-// Create markers
-let markers = [];
+// Add markers
 locations.forEach(site => {
-  let marker = L.marker(site.coords, { icon: icons[site.category] || icons.Soil })
-    .bindPopup(`
-      <img src="${site.image}" alt="${site.title}" class="popup-img" />
-      <b>${site.name}</b><br>
-      <a href="article.html?doc=${site.doc}&title=${encodeURIComponent(site.title)}">Read all about it!</a>
-    `);
-  marker.category = site.category;
-  marker.addTo(map);
-  markers.push(marker);
+  L.marker(site.coords, { icon: blueIcon }).addTo(map)
+    .bindPopup(`<b>${site.name}</b><br>
+      <a href="article.html?doc=${site.doc}&title=${encodeURIComponent(site.title)}">
+        Read all about it!
+      </a>`);
 });
-
-// Filter function
-function filterMarkers(category) {
-  markers.forEach(marker => {
-    if (category === 'all' || marker.category === category) {
-      map.addLayer(marker);
-    } else {
-      map.removeLayer(marker);
-    }
-  });
-}
 </script>
 
 </body>
