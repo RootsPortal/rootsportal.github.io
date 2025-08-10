@@ -1,75 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SCD Roots Portal</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <style>
-    body { margin: 0; font-family: sans-serif; }
-    header { background: #111; color: #fff; text-align: center; padding: 1rem; }
-    #map { height: 100vh; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SCD Roots Portal</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  body { margin: 0; font-family: Arial, sans-serif; }
+  header { background: #2f4f4f; color: white; padding: 1rem; text-align: center; }
+  #map { height: 100vh; }
 
-    .leaflet-popup-content {
-      font-size: 1.1rem;
-      max-width: 260px;
-      line-height: 1.5;
-    }
-    .leaflet-popup-content-wrapper {
-      padding: 14px;
-    }
-  </style>
+  /* Side navigation panel */
+  .sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 100%;
+    background: #f4f1e1;
+    border-right: 2px solid #ccc;
+    padding: 1rem;
+    box-sizing: border-box;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+  }
+  .sidebar h2 { margin-top: 0; font-size: 1.2rem; }
+  .sidebar button {
+    display: block;
+    width: 100%;
+    margin: 0.4rem 0;
+    padding: 0.6rem;
+    font-size: 1rem;
+    border: none;
+    background: #2f4f4f;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .sidebar button:hover {
+    background: #3f6f6f;
+  }
+
+  /* Collapsed state for small screens */
+  .sidebar.collapsed {
+    transform: translateX(-100%);
+  }
+  .toggle-btn {
+    position: absolute;
+    top: 10px;
+    left: 250px;
+    z-index: 1000;
+    background: #2f4f4f;
+    color: white;
+    border: none;
+    padding: 0.5rem 0.8rem;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 768px) {
+    .toggle-btn { left: 10px; }
+    .sidebar { width: 200px; }
+  }
+
+  /* Popup styling */
+  .leaflet-popup-content {
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+  .popup-img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+  }
+</style>
 </head>
 <body>
-  <header>
-    <h1>SCD Roots Portal</h1>
-  </header>
-  <div id="map"></div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<header>
+  <h1>SCD Roots Portal</h1>
+</header>
 
-  <script>
-    const map = L.map('map').setView([40.1, -74.7], 7);
+<div class="sidebar" id="sidebar">
+  <h2>Filter Map</h2>
+  <button onclick="filterMarkers('all')">Show All</button>
+  <button onclick="filterMarkers('Fossil')">Fossils</button>
+  <button onclick="filterMarkers('Soil')">Soils</button>
+  <button onclick="filterMarkers('Agriculture')">Agriculture</button>
+  <button onclick="filterMarkers('History')">History</button>
+</div>
+<button class="toggle-btn" onclick="toggleSidebar()">☰</button>
 
-    L.tileLayer('https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 16,
-      attribution: 'Map courtesy USGS National Map'
-    }).addTo(map);
+<div id="map"></div>
 
-    const icon = L.icon({
-      iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-      iconSize: [35, 56],
-      iconAnchor: [17, 56],
-      popupAnchor: [0, -40]
-    });
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Initialize map
+const map = L.map('map').setView([40.1, -74.7], 7);
 
-    const locations = [
+L.tileLayer('https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
+  maxZoom: 16,
+  attribution: 'Map courtesy USGS National Map'
+}).addTo(map);
+
+// Marker icon
+const defaultIcon = L.icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  iconSize: [35, 56],
+  iconAnchor: [17, 56],
+  popupAnchor: [0, -40]
+});
+
+// Location data
+const locations = [
   {
-    name: "2025.001 - Hadrosaurus foulkii Discovery (Haddonfield, NJ)",
+    name: "2025.001 - Hadrosaurus foulkii Discovery",
     coords: [39.910196, -75.02857],
     doc: "2025_001",
-    title: "Hadrosaurus foulkii Discovery"
+    title: "Hadrosaurus foulkii Discovery",
+    category: "Fossil",
+    image: "images/hadrosaurus.jpg"
   },
   {
-    name: "2025.002 - Atlantochelys mortoni Discovery (Marlboro, NJ)",
+    name: "2025.002 - Atlantochelys mortoni Discovery",
     coords: [40.3232, -74.2416],
     doc: "2025_002",
-    title: "Atlantochelys mortoni Discovery"
+    title: "Atlantochelys mortoni Discovery",
+    category: "Fossil",
+    image: "images/atlantochelys.jpg"
   },
   {
-    name: "2025.003 - Ohberg Mastodon Discovery (Vernon, NJ)",
+    name: "2025.003 - Ohberg Mastodon Discovery",
     coords: [41.1923, -74.4715],
     doc: "2025_003",
-    title: "Ohberg Mastodon Discovery"
+    title: "Ohberg Mastodon Discovery",
+    category: "Fossil",
+    image: "images/mastodon.jpg"
   }
 ];
-    locations.forEach(site => {
-      L.marker(site.coords, { icon }).addTo(map)
-        .bindPopup(`<b>${site.name}</b><br>
-          <a href="article.html?doc=${site.doc}&title=${encodeURIComponent(site.title)}">
-            Read all about it!
-          </a>`);
-    });
-  </script>
+
+// Create markers
+let markers = [];
+locations.forEach(site => {
+  let marker = L.marker(site.coords, { icon: defaultIcon })
+    .bindPopup(`
+      <img src="${site.image}" alt="${site.title}" class="popup-img" />
+      <b>${site.name}</b><br>
+      <a href="article.html?doc=${site.doc}&title=${encodeURIComponent(site.title)}">Read all about it!</a>
+    `);
+  marker.category = site.category;
+  marker.addTo(map);
+  markers.push(marker);
+});
+
+// Filtering
+function filterMarkers(category) {
+  markers.forEach(marker => {
+    if (category === 'all' || marker.category === category) {
+      map.addLayer(marker);
+    } else {
+      map.removeLayer(marker);
+    }
+  });
+}
+
+// Sidebar toggle
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('collapsed');
+}
+</script>
+
 </body>
 </html>
