@@ -100,7 +100,7 @@ L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/rastertiles/voyage
   maxZoom: 19
 }).addTo(map);
 
-// Custom marker icons by category
+// Custom marker icons
 const icons = {
   Soil: L.icon({ iconUrl: 'images/icon_soil.png', iconSize: [35, 35] }),
   Fossil: L.icon({ iconUrl: 'images/icon_fossil.png', iconSize: [35, 35] }),
@@ -108,7 +108,7 @@ const icons = {
   Geology: L.icon({ iconUrl: 'images/icon_geology.png', iconSize: [35, 35] })
 };
 
-// Locations
+// Location data
 const locations = [
   {
     name: "Hadrosaurus foulkii Discovery",
@@ -150,7 +150,7 @@ locations.forEach(site => {
   markers.push(marker);
 });
 
-// Filtering function
+// Filter function
 function filterMarkers(category) {
   markers.forEach(marker => {
     if (category === 'all' || marker.category === category) {
