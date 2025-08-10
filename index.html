@@ -6,68 +6,65 @@
 <title>SCD Roots Portal</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-  body { margin: 0; font-family: Arial, sans-serif; }
-  header { background: #2f4f4f; color: white; padding: 1rem; text-align: center; }
-  #map { height: 100vh; }
-
-  /* Side navigation panel */
-  .sidebar {
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+  }
+  #map {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 240px;
-    height: 100%;
-    background: #f4f1e1;
-    border-right: 2px solid #ccc;
-    padding: 1rem;
-    box-sizing: border-box;
-    overflow-y: auto;
-    transition: transform 0.3s ease;
+    top: 50px;
+    bottom: 50px;
+    left: 50px;
+    right: 50px;
+    z-index: 1;
+    border-radius: 12px;
+    overflow: hidden;
   }
-  .sidebar h2 { margin-top: 0; font-size: 1.2rem; }
-  .sidebar button {
-    display: block;
-    width: 100%;
-    margin: 0.4rem 0;
-    padding: 0.6rem;
-    font-size: 1rem;
-    border: none;
-    background: #2f4f4f;
-    color: white;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-  .sidebar button:hover {
-    background: #3f6f6f;
-  }
-
-  /* Collapsed state for small screens */
-  .sidebar.collapsed {
-    transform: translateX(-100%);
-  }
-  .toggle-btn {
+  /* Portal borders */
+  .border {
     position: absolute;
-    top: 10px;
-    left: 250px;
-    z-index: 1000;
-    background: #2f4f4f;
-    color: white;
-    border: none;
-    padding: 0.5rem 0.8rem;
+    z-index: 2;
+    background-size: cover;
+    background-position: center;
+    animation: glow 3s infinite alternate;
+  }
+  @keyframes glow {
+    0% { box-shadow: 0 0 5px #ffd27f; }
+    100% { box-shadow: 0 0 20px #ffcc66; }
+  }
+  .border.top {
+    top: 0; left: 50px; right: 50px; height: 50px;
+    background-image: url('images/border_top.jpg');
+  }
+  .border.bottom {
+    bottom: 0; left: 50px; right: 50px; height: 50px;
+    background-image: url('images/border_bottom.jpg');
+  }
+  .border.left {
+    top: 0; bottom: 0; left: 0; width: 50px;
+    background-image: url('images/border_left.jpg');
+  }
+  .border.right {
+    top: 0; bottom: 0; right: 0; width: 50px;
+    background-image: url('images/border_right.jpg');
+  }
+  /* Category icons */
+  .category-icon {
+    position: absolute;
+    width: 40px; height: 40px;
     cursor: pointer;
-    border-radius: 4px;
+    z-index: 3;
+    transition: transform 0.2s ease;
   }
-
-  @media (max-width: 768px) {
-    .toggle-btn { left: 10px; }
-    .sidebar { width: 200px; }
+  .category-icon:hover {
+    transform: scale(1.1);
   }
-
+  .icon-soil { bottom: 5px; left: calc(50% - 20px); }
+  .icon-fossil { top: calc(50% - 20px); left: 5px; }
+  .icon-agriculture { top: 5px; left: calc(50% - 20px); }
+  .icon-geology { top: calc(50% - 20px); right: 5px; }
   /* Popup styling */
-  .leaflet-popup-content {
-    font-size: 1.1rem;
-    line-height: 1.5;
-  }
   .popup-img {
     width: 100%;
     height: auto;
@@ -78,44 +75,43 @@
 </head>
 <body>
 
-<header>
-  <h1>SCD Roots Portal</h1>
-</header>
-
-<div class="sidebar" id="sidebar">
-  <h2>Filter Map</h2>
-  <button onclick="filterMarkers('all')">Show All</button>
-  <button onclick="filterMarkers('Fossil')">Fossils</button>
-  <button onclick="filterMarkers('Soil')">Soils</button>
-  <button onclick="filterMarkers('Agriculture')">Agriculture</button>
-  <button onclick="filterMarkers('History')">History</button>
-</div>
-<button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-
 <div id="map"></div>
+
+<!-- Portal borders -->
+<div class="border top"></div>
+<div class="border bottom"></div>
+<div class="border left"></div>
+<div class="border right"></div>
+
+<!-- Category filter icons -->
+<img src="images/icon_soil.png" class="category-icon icon-soil" onclick="filterMarkers('Soil')" title="Soil Sites">
+<img src="images/icon_fossil.png" class="category-icon icon-fossil" onclick="filterMarkers('Fossil')" title="Fossil Sites">
+<img src="images/icon_agriculture.png" class="category-icon icon-agriculture" onclick="filterMarkers('Agriculture')" title="Agriculture Sites">
+<img src="images/icon_geology.png" class="category-icon icon-geology" onclick="filterMarkers('Geology')" title="Geology Sites">
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // Initialize map
 const map = L.map('map').setView([40.1, -74.7], 7);
 
-L.tileLayer('https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
-  maxZoom: 16,
-  attribution: 'Map courtesy USGS National Map'
+L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 19
 }).addTo(map);
 
-// Marker icon
-const defaultIcon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconSize: [35, 56],
-  iconAnchor: [17, 56],
-  popupAnchor: [0, -40]
-});
+// Custom marker icons by category
+const icons = {
+  Soil: L.icon({ iconUrl: 'images/icon_soil.png', iconSize: [35, 35] }),
+  Fossil: L.icon({ iconUrl: 'images/icon_fossil.png', iconSize: [35, 35] }),
+  Agriculture: L.icon({ iconUrl: 'images/icon_agriculture.png', iconSize: [35, 35] }),
+  Geology: L.icon({ iconUrl: 'images/icon_geology.png', iconSize: [35, 35] })
+};
 
-// Location data
+// Locations
 const locations = [
   {
-    name: "2025.001 - Hadrosaurus foulkii Discovery",
+    name: "Hadrosaurus foulkii Discovery",
     coords: [39.910196, -75.02857],
     doc: "2025_001",
     title: "Hadrosaurus foulkii Discovery",
@@ -123,7 +119,7 @@ const locations = [
     image: "images/hadrosaurus.jpg"
   },
   {
-    name: "2025.002 - Atlantochelys mortoni Discovery",
+    name: "Atlantochelys mortoni Discovery",
     coords: [40.3232, -74.2416],
     doc: "2025_002",
     title: "Atlantochelys mortoni Discovery",
@@ -131,7 +127,7 @@ const locations = [
     image: "images/atlantochelys.jpg"
   },
   {
-    name: "2025.003 - Ohberg Mastodon Discovery",
+    name: "Ohberg Mastodon Discovery",
     coords: [41.1923, -74.4715],
     doc: "2025_003",
     title: "Ohberg Mastodon Discovery",
@@ -143,7 +139,7 @@ const locations = [
 // Create markers
 let markers = [];
 locations.forEach(site => {
-  let marker = L.marker(site.coords, { icon: defaultIcon })
+  let marker = L.marker(site.coords, { icon: icons[site.category] || icons.Soil })
     .bindPopup(`
       <img src="${site.image}" alt="${site.title}" class="popup-img" />
       <b>${site.name}</b><br>
@@ -154,7 +150,7 @@ locations.forEach(site => {
   markers.push(marker);
 });
 
-// Filtering
+// Filtering function
 function filterMarkers(category) {
   markers.forEach(marker => {
     if (category === 'all' || marker.category === category) {
@@ -163,11 +159,6 @@ function filterMarkers(category) {
       map.removeLayer(marker);
     }
   });
-}
-
-// Sidebar toggle
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('collapsed');
 }
 </script>
 
