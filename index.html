@@ -11,21 +11,43 @@
     font-family: Arial, sans-serif;
     background: #c9c3b5; /* outer background */
   }
-  /* Frame colors - now black */
+  /* Frame colors - black */
   .frame {
     position: fixed;
     z-index: 2;
-    background: #000000; /* black frame */
+    background: #000000;
   }
   .frame.top { top: 0; left: 0; right: 0; height: 20px; }
   .frame.bottom { bottom: 0; left: 0; right: 0; height: 20px; }
   .frame.left { top: 0; bottom: 0; left: 0; width: 20px; }
   .frame.right { top: 0; bottom: 0; right: 0; width: 20px; }
 
+  /* Title Bar Styling */
+  .title-bar {
+    position: absolute;
+    top: 0;
+    left: 20px; /* inside left frame */
+    right: 20px; /* inside right frame */
+    height: 60px;
+    background: black;
+    color: white;
+    text-align: center;
+    font-family: "Times New Roman", serif;
+    padding-top: 6px;
+    z-index: 4;
+  }
+  .title-main {
+    font-size: 28px;
+    font-weight: bold;
+  }
+  .title-sub {
+    font-size: 16px;
+  }
+
   /* Map container */
   #map {
     position: absolute;
-    top: 20px;
+    top: 80px; /* pushed down below title bar */
     bottom: 20px;
     left: 20px;
     right: 20px;
@@ -36,15 +58,15 @@
     line-height: 1.5;
   }
 
-  /* Logo styling - now 4x bigger */
+  /* Logo styling - bottom right */
   .logo-container {
     position: absolute;
-    bottom: 4px;
-    right: 8px;
+    bottom: 24px; /* above bottom frame */
+    right: 28px; /* inside right frame */
     z-index: 3;
   }
   .logo-container img {
-    height: 280px; /* 4x bigger */
+    height: 280px; /* big for kiosks */
     width: auto;
     display: block;
   }
@@ -57,6 +79,12 @@
 <div class="frame bottom"></div>
 <div class="frame left"></div>
 <div class="frame right"></div>
+
+<!-- Title Bar -->
+<div class="title-bar">
+  <div class="title-main">ROOTS PORTAL</div>
+  <div class="title-sub">Brought to you by the Soil Conservation Districts of New Jersey</div>
+</div>
 
 <!-- Logo -->
 <div class="logo-container">
@@ -71,7 +99,7 @@
 // Initialize map
 const map = L.map('map').setView([40.1, -74.7], 7);
 
-// USGS topo or switch to another base if desired
+// USGS topo base
 L.tileLayer('https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
   maxZoom: 16,
   attribution: 'Map courtesy USGS National Map'
